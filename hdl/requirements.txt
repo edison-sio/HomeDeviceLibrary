@@ -1,0 +1,2 @@
+broadlink==0.18.3
+zigpy==0.60.2
