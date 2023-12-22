@@ -2,7 +2,11 @@ import requests
 from typing import Any
 import enum
 
-class HaService(enum.Enum):
+class HaEndpoint(enum.Enum):
+    """This class stores Home Assistant API endpoints"""
+    def __str__(self) -> str:
+        return self.value
+
     LIGHT_TOGGLE = "/light/toggle"
     LIGHT_ON     = "/light/on"
     LIGHT_OFF    = "/light/off"
@@ -12,20 +16,19 @@ class HaService(enum.Enum):
     SWITCH_OFF    = "/swtich/off"
     ...
 
-class HaRequest:
-    def __init__(self, service: HaService, data: dict[str, str]):
-        self._service = service
-        self._data = data
+
+class HaRequest(requests.Request):
+    def __init__(self, base_url: str, endpoint: HaEndpoint | str, data: dict[str, str]) -> None:
+        self.base_url = base_url
+        self.endpoint = endpoint
+        self.data = data
     
     @property
-    def data(self) -> dict[str, str]:
-        return self._data
+    def url(self) -> str:            
+        return f"{self.base_url}{self.endpoint}"
+    
 
-    @property
-    def service_uri(self) -> str:
-        return self._service.value
-
-class HaResponse:
+class HaResponse(requests.Response):
     def __init__(self, data: dict[str, str] | None = None):
         self._data = data
 
@@ -45,15 +48,25 @@ class HaDevice:
             "Content-Type": "application/json"
         }
     
-    def send_request_and_wait_response(self, req: HaRequest) -> HaResponse:
-        """Send a service request and wait for a response"""
-        # Construct service URL
-        service_url = f"{self._url}{req.service_uri}"
+    def send_request(self, endpoint: str, data: dict[str, str]) -> None:
+        """Send a request to the HA server"""
+        req = HaRequest(
+            base_url=self.base_url,
+            endpoint=endpoint,
+            data=data
+        )
+
+        req.send()
+    
+    # def send_request_and_wait_response(self, req: HaRequest) -> HaResponse:
+    #     """Send a service request and wait for a response"""
+    #     # Construct service URL
+    #     service_url = f"{self._url}{req.service_uri}"
         
-        response = requests.post(service_url, headers=self._headers(), json=req.data)
+    #     response = requests.post(service_url, headers=self._headers(), json=req.data)
         
-        if response.status_code == 200: # Check response status
-            return HaResponse(response.json())
-        else:
-            return HaResponse()
+    #     if response.status_code == 200: # Check response status
+    #         return HaResponse(response.json())
+    #     else:
+    #         return HaResponse()
         
