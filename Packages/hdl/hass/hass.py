@@ -40,6 +40,10 @@ class HassComms:
             "Content-Type": "application/json"
         }
     
+    def get_states(self) -> list[dict[str, Any]]:
+        """Get a list of state objects"""
+        pass
+    
     def get(self, endpoint: HassEndpoint | str, params: dict[str, str] | None, data: dict[str, str] | None = None) -> HassResponse:
         """Send get request to the HA server and get response"""
         url = f"http://{self.host}:{self.port}{endpoint}"
