@@ -21,14 +21,14 @@ class Color:
         return self._rgb
 
 class BaseLight(abc.ABC):
-    """Abstract class to represent light control"""
+    """Abstract class to represent light control interface"""
     @abc.abstractmethod
-    def set_on(self) -> bool:
+    def turn_on(self) -> bool:
         """Set the light state to ON"""
         pass
 
     @abc.abstractmethod
-    def set_off(self) -> bool:
+    def turn_off(self) -> bool:
         """Set the light state to OFF"""
         pass
     
@@ -40,3 +40,4 @@ class BaseLight(abc.ABC):
     @abc.abstractmethod
     def set_brightness(self, brightness: float) -> bool:
         """Set the light brightness"""
+        pass
